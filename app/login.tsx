@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
-import { Container, Button, PhoneInput } from '@/components/ui';
-import { Colors, Typography, Spacing } from '@/constants/Theme';
+import { Button, Container, PhoneInput } from '@/components/ui';
+import { Colors, Spacing, Typography } from '@/constants/Theme';
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -41,25 +41,31 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Navigate to OTP verification screen (to be implemented)
-      Alert.alert(
-        'Code envoyé',
-        `Un code de vérification a été envoyé au ${selectedCountry?.dialCode || '+229'} ${phoneNumber}`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // router.push('/verify-otp');
-              console.log('Navigate to OTP verification');
-            },
-          },
-        ]
-      );
+      // Import authService dynamically
+      const { authService } = await import('@/services/auth');
+
+      // Send OTP via Supabase
+      const result = await authService.sendOTP({
+        phoneNumber: phoneNumber,
+        countryCode: selectedCountry?.dialCode || '+229',
+      });
+
+      if (!result.success) {
+        setError(result.error || 'Erreur lors de l\'envoi du code');
+        return;
+      }
+
+      // Navigate to OTP verification screen
+      const fullPhoneNumber = `${selectedCountry?.dialCode || '+229'} ${phoneNumber}`;
+      router.push({
+        pathname: '/verify-otp',
+        params: {
+          phoneNumber: fullPhoneNumber,
+          isNewUser: 'false', // Existing user login
+        },
+      });
     } catch (err) {
       setError('Erreur lors de l\'envoi du code. Veuillez réessayer.');
     } finally {
@@ -68,8 +74,7 @@ export default function LoginScreen() {
   };
 
   const handleCreateAccount = () => {
-    // Navigate to registration screen (to be implemented)
-    Alert.alert('Information', 'L\'inscription sera disponible prochainement');
+    router.push('/signup');
   };
 
   const handleGoogleLogin = () => {

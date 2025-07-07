@@ -8,7 +8,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test:auth": "node scripts/test-auth.js",
+    "test:config": "node -e \"console.log('Configuration check:'); Object.keys(process.env).filter(k => k.startsWith('EXPO_PUBLIC_')).forEach(k => console.log(k + ':', process.env[k] ? '✓' : '✗'));\""
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -16,6 +18,8 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
+    "@supabase/supabase-js": "^2.50.3",
+    "axios": "^1.10.0",
     "expo": "~53.0.17",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",

@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
 
   const handleGetStarted = () => {
-    router.push('/login');
+    router.push('/signup');
   };
 
   const handleLogin = () => {
